@@ -14,6 +14,7 @@ import * as cocoSsd from "@tensorflow-models/coco-ssd";
 export function ObjectDetector(props) {
   const [imgData, setImgData] = useState(null);
   const [predictions, setPredictions] = useState([]);
+  const [isLoading, setLoading] = useState(false);
   const fileInputRef = useRef();
   const imageRef = useRef();
   const isEmptyPredictions = !predictions || predictions.length === 0;
@@ -45,7 +46,7 @@ export function ObjectDetector(props) {
 
   const detectObjectsOnImage = async (imageElement, imageSize) => {
     const model = await cocoSsd.load({});
-    const predictions = await model.detect(imageElement, 6);
+    const predictions = await model.detect(imageElement, 10);
     const normalizedPredictions = normalizePredictions(predictions, imageSize);
     setPredictions(normalizedPredictions);
     console.log("Predictions: ", predictions);
@@ -61,6 +62,8 @@ export function ObjectDetector(props) {
   };
 
   const onSelectImage = async (e) => {
+    setPredictions([]);
+    setLoading(true);
     const file = e.target.files[0];
     const imgData = await readImage(file);
     setImgData(imgData);
@@ -74,32 +77,38 @@ export function ObjectDetector(props) {
         height: imageElement.height,
       };
       await detectObjectsOnImage(imageElement, imgSize);
+      setLoading(false);
     };
   };
 
   return (
-    <ObjectDetectorContainer>
-      <DetectorContainer>
-        {imgData && <TargetImg src={imgData} ref={imageRef} />}
-        {!isEmptyPredictions &&
-          predictions.map((prediction, index) => (
-            <TargetBox
-              key={index}
-              x={prediction.bbox[0]}
-              y={prediction.bbox[1]}
-              width={prediction.bbox[2]}
-              height={prediction.bbox[3]}
-              classType={prediction.class}
-              score={prediction.score * 100}
-            />
-          ))}
-      </DetectorContainer>
-      <HiddenFileInput
-        type="file"
-        ref={fileInputRef}
-        onChange={onSelectImage}
-      />
-      <SelectButton onClick={openFilePicker}>Select Image</SelectButton>
-    </ObjectDetectorContainer>
+    <>
+      <h1>Object Detector</h1>
+      <ObjectDetectorContainer>
+        <DetectorContainer>
+          {imgData && <TargetImg src={imgData} ref={imageRef} />}
+          {!isEmptyPredictions &&
+            predictions.map((prediction, index) => (
+              <TargetBox
+                key={index}
+                x={prediction.bbox[0]}
+                y={prediction.bbox[1]}
+                width={prediction.bbox[2]}
+                height={prediction.bbox[3]}
+                classType={prediction.class}
+                score={prediction.score * 100}
+              />
+            ))}
+        </DetectorContainer>
+        <HiddenFileInput
+          type="file"
+          ref={fileInputRef}
+          onChange={onSelectImage}
+        />
+        <SelectButton onClick={openFilePicker}>
+          {isLoading ? "DETECTING ..." : "Select Image"}
+        </SelectButton>
+      </ObjectDetectorContainer>
+    </>
   );
 }
