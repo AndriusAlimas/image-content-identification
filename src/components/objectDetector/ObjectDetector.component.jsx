@@ -91,7 +91,7 @@ export function ObjectDetector(props) {
               width={prediction.bbox[2]}
               height={prediction.bbox[3]}
               classType={prediction.class}
-              score={prediction.score * 100}
+              score={prediction.score * 100 + " %"}
             />
           ))}
       </DetectorContainer>
