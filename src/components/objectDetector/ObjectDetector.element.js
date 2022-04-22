@@ -66,12 +66,12 @@ export const TargetBox = styled.div`
   width: ${({ width }) => width + "px"};
   height: ${({ height }) => height + "px"};
 
-  border: 4px solid #1ac71a;
+  border: 4px solid #422800;
   background-color: transparent;
   z-index: 20;
   &::before {
     content: "${({ classType, score }) => `${classType} ${score.toFixed(1)}%`}";
-    color: #1ac71a;
+    color: #422800;
     font-weight: 500;
     font-size: 17px;
     position: absolute;
