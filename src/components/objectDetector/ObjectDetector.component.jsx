@@ -61,7 +61,6 @@ export function ObjectDetector(props) {
   };
 
   const onSelectImage = async (e) => {
-    // select only one single file
     const file = e.target.files[0];
     const imgData = await readImage(file);
     setImgData(imgData);
